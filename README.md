@@ -198,7 +198,7 @@ python validate.py --model-dir models
 - ✅ **TP (верно выявленные мошенники)**: 878  
 
 ### 📋 Classification Report
-```
+
 |             |precision |  recall  |f1-score  |support|
 |:---         |   :---:  |   :---:  |   :---:  |   ---:|
 |Genuine      |0.97      |0.95      |0.96      |4755   |
@@ -206,7 +206,7 @@ python validate.py --model-dir models
 |accuracy     |          |          |0.93      |5792   |
 |macro avg    |0.87      |0.90      |0.88      |5792   |
 |weighted avg | 0.93     |0.93      |0.93      |5792   |
-```
+
 ---
 
 ### 💼 Бизнес-влияние (гипотезы для России, 2025)
