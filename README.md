@@ -201,11 +201,11 @@ python validate.py --model-dir models
 
 |             |precision |  recall  |f1-score  |support|
 |:---         |   :---:  |   :---:  |   :---:  |   ---:|
-|Genuine      |0.97      |0.95      |0.96      |4755   |
-|Fraud        |0.78      |0.85      |0.81      |1037   |
-|accuracy     |          |          |0.93      |5792   |
-|macro avg    |0.87      |0.90      |0.88      |5792   |
-|weighted avg | 0.93     |0.93      |0.93      |5792   |
+|**Genuine**      |0.97      |0.95      |0.96      |4755   |
+|**Fraud**        |0.78      |0.85      |0.81      |1037   |
+|**accuracy**     |          |          |0.93      |5792   |
+|**macro avg**    |0.87      |0.90      |0.88      |5792   |
+|**weighted avg** | 0.93     |0.93      |0.93      |5792   |
 
 ---
 
