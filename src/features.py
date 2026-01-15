@@ -4,10 +4,12 @@
 Статус: Актуальный - может использоваться.
 """
 
-import re
-from typing import Any, Optional
-
 import pandas as pd
+import numpy as np
+import re
+from collections import Counter
+import math
+from typing import Optional
 
 # === Константы ===
 SUSPICIOUS_HOST_PATTERNS = ["mi-server", "ota-bd", "pangu", "buildsrv", "cn-", "dg02", "pool", "kvm"]
@@ -52,15 +54,15 @@ def safe_bool_to_int(val) -> int:
 def parse_debugger(x) -> int:
     if pd.isna(x):
         return 0
-    match = re.search(r"(True|False)", str(x))
-    return 1 if match and match.group(1) == "True" else 0
+    s = str(x).lower()
+    return 1 if "true" in s else 0
 
 
 def has_test_keys(val) -> bool:
     return pd.notna(val) and "test-keys" in str(val).lower()
 
 
-def extract_key_type(val: Any) -> str:
+def extract_key_type(val) -> str:
     if pd.isna(val):
         return "missing"
     s = str(val).lower()
@@ -72,94 +74,115 @@ def extract_key_type(val: Any) -> str:
         return "unknown"
 
 
-def process_packages(packages_path: str) -> pd.DataFrame:
-    """
-    Обрабатывает android_packages.csv.gz и возвращает агрегированные признаки по agent_id.
-    Полностью совместима с оригинальной логикой, но значительно быстрее.
-    """
-    # Читаем только нужные колонки
-    packages_df = pd.read_csv(
-        packages_path,
-        compression="gzip",
-        usecols=["agent_id", "package", "data"]
-    )
-
-    # === Извлечение полей из JSON без json.loads ===
-    # Используем регулярные выражения для безопасного и быстрого парсинга
-    packages_df["cert"] = packages_df["data"].str.extract(r'"cert"\s*:\s*"([^"]*)"')
-    packages_df["installed"] = packages_df["data"].str.extract(r'"installed"\s*:\s*"([^"]*)"')
-
-    # --- Признак 1: количество пакетов ---
-    n_packages = packages_df.groupby("agent_id").size()
-
-    # --- Признак 2: количество уникальных сертификатов ---
-    # cert может быть NaN — nunique() игнорирует NaN по умолчанию
-    n_unique_certs = packages_df.groupby("agent_id")["cert"].nunique()
-
-    # --- Признак 3: количество легитимных приложений ---
-    is_legit = pd.Series(False, index=packages_df.index)
-    for prefix in LEGIT_PACKAGES_PREFIXES:
-        is_legit |= packages_df["package"].str.startswith(prefix, na=False)
-    n_legit_apps = packages_df[is_legit].groupby("agent_id").size().reindex(n_packages.index, fill_value=0)
-
-    # --- Признак 4: наличие подозрительных пакетов ---
-    # В оригинале: объединяли все package в строку и искали подстроки
-    # Это эквивалентно: есть ли хотя бы один пакет, содержащий подстроку?
-    has_suspicious = pd.Series(False, index=packages_df.index)
-    for substr in SUSPICIOUS_PACKAGES_SUBSTR:
-        has_suspicious |= packages_df["package"].str.contains(substr, case=False, na=False)
-    # Если хотя бы один пакет подозрительный → 1
-    has_suspicious_pkg = (
-        packages_df[has_suspicious]
-        .groupby("agent_id")
-        .size()
-        .fillna(0)
-        .clip(lower=0, upper=1)
-        .astype(int)
-        .reindex(n_packages.index, fill_value=0)
-    )
-
-    # --- Признак 5: разброс дат установки (в часах) ---
-    packages_df["installed_dt"] = pd.to_datetime(packages_df["installed"], errors="coerce")
-    min_time = packages_df.groupby("agent_id")["installed_dt"].min()
-    max_time = packages_df.groupby("agent_id")["installed_dt"].max()
-    time_diff_sec = (max_time - min_time).dt.total_seconds().fillna(0)
-    install_span = (time_diff_sec / 3600.0).reindex(n_packages.index, fill_value=0.0)
-
-    # Собираем всё в один DataFrame
-    pkg_features = pd.DataFrame({
-        "agent_id": n_packages.index,
-        "n_packages": n_packages.values,
-        "n_unique_certs": n_unique_certs.reindex(n_packages.index, fill_value=0).values,
-        "n_legit_apps": n_legit_apps.values,
-        "has_suspicious_pkg": has_suspicious_pkg.values,
-        "install_span_hours": install_span.values,
-    })
-
-    return pkg_features
+def entropy(s):
+    if not s or pd.isna(s):
+        return 0.0
+    p, lns = Counter(s), float(len(s))
+    return -sum(count / lns * math.log(count / lns + 1e-9) for count in p.values())
 
 
 def preprocess_features(
-    df: pd.DataFrame,
-    packages_path: Optional[str] = None
+        df: pd.DataFrame,
+        packages_path: Optional[str] = None
 ) -> pd.DataFrame:
     """
-    Основная функция препроцессинга.
-    Если указан packages_path — загружает и мержит признаки из пакетов.
+    Полноценный препроцессинг датасета с поддержкой пакетов и продвинутых признаков.
+
+    Вход:
+        df — DataFrame с device_info (должен содержать 'agent_id', 'target', и build-колонки)
+        packages_path — путь к android_packages.csv.gz (опционально, но нужен для frac_legit_certs и других признаков)
+
+    Выход:
+        Обработанный DataFrame без чувствительных/идентифицирующих полей, готовый к обучению.
     """
     df = df.copy()
-    df["target"] = df["target"].map({"F": 1, "G": 0})
 
-    # === Загрузка признаков из пакетов (если указан путь) ===
+    # Целевая переменная
+    if "target" in df.columns:
+        df["target"] = df["target"].map({"F": 1, "G": 0})
+
+    # === Обработка пакетов (если указан путь) ===
     if packages_path is not None:
-        pkg_feats = process_packages(packages_path)
+        # Загружаем пакеты
+        pkg_full = pd.read_csv(packages_path, compression="gzip", usecols=["agent_id", "package", "data"])
+        pkg_full["cert"] = pkg_full["data"].str.extract(r'"cert"\s*:\s*"([^"]*)"')
+        pkg_full["installed"] = pkg_full["data"].str.extract(r'"installed"\s*:\s*"([^"]*)"')
+
+        # --- Базовые агрегаты ---
+        n_packages = pkg_full.groupby("agent_id").size()
+        n_unique_certs = pkg_full.groupby("agent_id")["cert"].nunique()
+
+        is_legit = pd.Series(False, index=pkg_full.index)
+        for prefix in LEGIT_PACKAGES_PREFIXES:
+            is_legit |= pkg_full["package"].str.startswith(prefix, na=False)
+        n_legit_apps = pkg_full[is_legit].groupby("agent_id").size().reindex(n_packages.index, fill_value=0)
+
+        is_susp = pd.Series(False, index=pkg_full.index)
+        for substr in SUSPICIOUS_PACKAGES_SUBSTR:
+            is_susp |= pkg_full["package"].str.contains(substr, case=False, na=False)
+        has_suspicious_pkg = (
+            pkg_full[is_susp].groupby("agent_id").size()
+            .fillna(0).clip(upper=1).astype(int)
+            .reindex(n_packages.index, fill_value=0)
+        )
+
+        # --- Временные признаки ---
+        pkg_full["installed_dt"] = pd.to_datetime(pkg_full["installed"], errors="coerce", unit="ms")
+        min_t = pkg_full.groupby("agent_id")["installed_dt"].min()
+        max_t = pkg_full.groupby("agent_id")["installed_dt"].max()
+        span = (max_t - min_t).dt.total_seconds().fillna(0) / 3600.0
+        install_span = span.reindex(n_packages.index, fill_value=0.0)
+
+        # --- Сбор базовых признаков ---
+        pkg_feats = pd.DataFrame({
+            "agent_id": n_packages.index,
+            "n_packages": n_packages.values,
+            "n_unique_certs": n_unique_certs.reindex(n_packages.index, fill_value=0).values,
+            "n_legit_apps": n_legit_apps.values,
+            "has_suspicious_pkg": has_suspicious_pkg.values,
+            "install_span_hours": install_span.values,
+        })
+
+        # Мержим в основной df
         df = df.merge(pkg_feats, on="agent_id", how="left")
-        # Заполняем NaN разумными значениями
+
+        # --- Расчёт frac_legit_certs (только если есть target) ---
+        if "target" in df.columns:
+            # Добавляем target к пакетам
+            pkg_with_target = pkg_full.merge(df[["agent_id", "target"]], on="agent_id", how="inner")
+
+            # Определяем легитимные пакеты
+            legit_mask = pd.Series(False, index=pkg_with_target.index)
+            for prefix in LEGIT_PACKAGES_PREFIXES:
+                legit_mask |= pkg_with_target["package"].str.startswith(prefix, na=False)
+
+            # Только G-устройства (target=0) + легитимные пакеты + cert не NaN
+            legit_g_certs = pkg_with_target[
+                (pkg_with_target["target"] == 0) & legit_mask & pkg_with_target["cert"].notna()
+                ]["cert"].unique()
+
+            LEGIT_CERTS_GLOBAL = set(legit_g_certs)
+
+            # Считаем долю легитимных сертификатов на устройство
+            pkg_full["is_legit_cert"] = pkg_full["cert"].isin(LEGIT_CERTS_GLOBAL)
+            n_legit_certs_new = pkg_full.groupby("agent_id")["is_legit_cert"].sum()
+            n_total_pkgs = pkg_full.groupby("agent_id").size()
+            frac_legit_new = (n_legit_certs_new / n_total_pkgs).fillna(0)
+
+            # Добавляем в df
+            df["frac_legit_certs"] = df["agent_id"].map(frac_legit_new).fillna(0)
+        else:
+            # Если нет target — не можем построить frac_legit_certs
+            df["frac_legit_certs"] = 0.0
+
+        # Заполняем NaN
         df["n_packages"] = df["n_packages"].fillna(0).astype(int)
         df["n_unique_certs"] = df["n_unique_certs"].fillna(0).astype(int)
         df["n_legit_apps"] = df["n_legit_apps"].fillna(0).astype(int)
         df["has_suspicious_pkg"] = df["has_suspicious_pkg"].fillna(0).astype(int)
         df["install_span_hours"] = df["install_span_hours"].fillna(0).astype(float)
+        df["frac_legit_certs"] = df["frac_legit_certs"].fillna(0.0).astype(float)
+
     else:
         # Заглушки, если пакеты не используются
         df["n_packages"] = 0
@@ -167,8 +190,15 @@ def preprocess_features(
         df["n_legit_apps"] = 0
         df["has_suspicious_pkg"] = 0
         df["install_span_hours"] = 0.0
+        df["frac_legit_certs"] = 0.0
 
-    # === Build-колонки ===
+    # === Энтропия серийного номера ===
+    if "Serial" in df.columns:
+        df["serial_entropy"] = df["Serial"].apply(entropy)
+    else:
+        df["serial_entropy"] = 0.0
+
+    # === Build-колонки и пропуски ===
     build_cols = [
         "PhoneHost", "AndroidSDK", "PhoneBootloader", "PhoneBoard",
         "PhoneProduct", "AndroidRelease", "PhoneFinterprint",
@@ -176,12 +206,12 @@ def preprocess_features(
         "PhoneDevice", "PhoneHardware", "Serial", "PhoneDisplay"
     ]
 
-    # Пропуски как сигнал
     for col in build_cols:
         if col in df.columns:
             df[f"{col}_missing"] = df[col].isna().astype(int)
 
-    df["is_missing_build_info"] = df[build_cols].isna().any(axis=1).astype(int)
+    existing_build_cols = [c for c in build_cols if c in df.columns]
+    df["is_missing_build_info"] = df[existing_build_cols].isna().any(axis=1).astype(int)
 
     # === Бинаризация флагов ===
     flag_cols = ["NonMarketAppsEnabled", "IsDeviceSecured", "DeveloperModeEnabled"]
@@ -193,27 +223,43 @@ def preprocess_features(
         df["DebuggerConnected"] = df["DebuggerConnected"].apply(parse_debugger)
 
     # === Специфические сигнатуры ===
-    df["is_common_serial"] = (df["Serial"] == COMMON_SERIAL).astype(int)
+    if "Serial" in df.columns:
+        df["is_common_serial"] = (df["Serial"] == COMMON_SERIAL).astype(int)
+    else:
+        df["is_common_serial"] = 0
 
-    df["is_test_keys"] = (
-        df["PhoneDisplay"].apply(has_test_keys) |
-        df["PhoneFinterprint"].apply(has_test_keys)
-    ).astype(int)
+    if "PhoneDisplay" in df.columns or "PhoneFinterprint" in df.columns:
+        display_test = df["PhoneDisplay"].apply(has_test_keys) if "PhoneDisplay" in df.columns else False
+        fprint_test = df["PhoneFinterprint"].apply(has_test_keys) if "PhoneFinterprint" in df.columns else False
+        df["is_test_keys"] = (display_test | fprint_test).astype(int)
+    else:
+        df["is_test_keys"] = 0
 
-    df["is_suspicious_host"] = df["PhoneHost"].fillna("").str.lower().apply(
-        lambda x: int(any(pat in x for pat in SUSPICIOUS_HOST_PATTERNS))
-    )
+    if "PhoneHost" in df.columns:
+        df["is_suspicious_host"] = df["PhoneHost"].fillna("").str.lower().apply(
+            lambda x: int(any(pat in x for pat in SUSPICIOUS_HOST_PATTERNS))
+        )
+    else:
+        df["is_suspicious_host"] = 0
 
-    df["is_old_sdk"] = ((df["AndroidSDK"] < 28) & df["AndroidSDK"].notna()).astype(int)
-    df["is_unsecured"] = (df["IsDeviceSecured"] == 0).astype(int)
+    if "AndroidSDK" in df.columns:
+        df["is_old_sdk"] = ((df["AndroidSDK"] < 28) & df["AndroidSDK"].notna()).astype(int)
+    else:
+        df["is_old_sdk"] = 0
+
+    if "IsDeviceSecured" in df.columns:
+        df["is_unsecured"] = (df["IsDeviceSecured"] == 0).astype(int)
+    else:
+        df["is_unsecured"] = 0
 
     # === Анализ отпечатков ===
-    if "PhoneFingerprint" in df.columns:
-        fprint_freq = df["PhoneFingerprint"].map(df["PhoneFingerprint"].value_counts())
+    fingerprint_col = "PhoneFingerprint" if "PhoneFingerprint" in df.columns else "PhoneFinterprint"
+    if fingerprint_col in df.columns:
+        fprint_freq = df[fingerprint_col].map(df[fingerprint_col].value_counts())
         df["fprint_freq"] = fprint_freq.fillna(1)
         df["is_common_fprint"] = (df["fprint_freq"] > 100).astype(int)
         df["is_rare_fprint"] = (df["fprint_freq"] <= 1).astype(int)
-        df["key_type"] = df["PhoneFingerprint"].apply(extract_key_type)
+        df["key_type"] = df[fingerprint_col].apply(extract_key_type)
         key_dummies = pd.get_dummies(df["key_type"], prefix="key")
         df = pd.concat([df, key_dummies], axis=1)
         df.drop(columns=["key_type"], inplace=True)
@@ -227,26 +273,27 @@ def preprocess_features(
             df[col] = df[col].where(df[col].isin(top_cats), "OTHER")
 
     # === Комбинированные признаки ===
+    dev_mode = df["DeveloperModeEnabled"] if "DeveloperModeEnabled" in df.columns else pd.Series(0, index=df.index)
     df["risky_combo_1"] = (
-        (df["NonMarketAppsEnabled"] == 1) &
-        (df["IsDeviceSecured"] == 0) &
-        (df["DeveloperModeEnabled"] == 1)
+            (df["NonMarketAppsEnabled"] == 1) &
+            (df["IsDeviceSecured"] == 0) &
+            (dev_mode == 1)
     ).astype(int)
 
     df["emulator_pattern"] = (
-        (df["is_old_sdk"] == 1) &
-        (df["DebuggerConnected"] == 1) &
-        (df["is_common_serial"] == 1)
+            (df["is_old_sdk"] == 1) &
+            (df["DebuggerConnected"] == 1) &
+            (df["is_common_serial"] == 1)
     ).astype(int)
 
     df["low_legit_ratio"] = (df["n_legit_apps"] / (df["n_packages"] + 1e-6)) < 0.1
     df["low_legit_ratio"] = df["low_legit_ratio"].astype(int)
 
-    # === Удаление исходных идентификаторов и чувствительных полей ===
+    # === Удаление идентификаторов и чувствительных полей ===
     cols_to_drop = [
         "agent_id", "PhoneID", "PhoneFinterprint", "PhoneRadio", "Serial", "PhoneDisplay",
         "PhoneBootloader", "PhoneBoard", "PhoneProduct", "PhoneDevice",
-        "PhoneManufacturerModel", "AndroidRelease", "PhoneHost", "PhoneFingerprint"
+        "PhoneManufacturerModel", "AndroidRelease", "PhoneHost", "PhoneFingerprint", "data"
     ]
     df = df.drop(columns=[c for c in cols_to_drop if c in df.columns], errors="ignore")
 
