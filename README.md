@@ -200,7 +200,7 @@ python validate.py --model-dir models
 ### 📋 Classification Report
 ```
 |             |precision |  recall  |f1-score  |support|
-|-------------|----------|----------|------------------|
+|:---         |   :---:  |   :---:  |   :---:  |   ---:|
 |Genuine      |0.97      |0.95      |0.96      |4755   |
 |Fraud        |0.78      |0.85      |0.81      |1037   |
 |accuracy     |          |          |0.93      |5792   |
