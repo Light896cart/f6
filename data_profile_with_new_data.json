@@ -1,0 +1,467 @@
+{
+  "columns": {
+    "NonMarketAppsEnabled": {
+      "dtype": "object",
+      "n_missing": 2779,
+      "pct_missing": 11.996028662695329,
+      "n_unique": 2,
+      "most_frequent_value": "True",
+      "most_frequent_count": 19938,
+      "most_frequent_pct": 86.06578606578607,
+      "top_5_values": {
+        "True": 19938,
+        "nan": 2779,
+        "False": 449
+      },
+      "value_counts_sample": {
+        "True": 19938,
+        "nan": 2779,
+        "False": 449
+      }
+    },
+    "PhoneHost": {
+      "dtype": "object",
+      "n_missing": 2765,
+      "pct_missing": 11.935595268928601,
+      "n_unique": 2271,
+      "most_frequent_value": "NaN",
+      "most_frequent_count": 2765,
+      "most_frequent_pct": 11.935595268928601,
+      "top_5_values": {
+        "nan": 2765,
+        "VPDJR204": 367,
+        "mi-server": 359,
+        "c4-miui-ota-bd128.bj": 358,
+        "m1-xm-ota-bd103.bj.idc.xiaomi.com": 328
+      },
+      "value_counts_sample": {
+        "nan": 2765,
+        "VPDJR204": 367,
+        "mi-server": 359
+      }
+    },
+    "AndroidSDK": {
+      "dtype": "float64",
+      "n_missing": 2770,
+      "pct_missing": 11.95717862384529,
+      "n_unique": 15,
+      "mean": 30.221121788585997,
+      "median": 30.0,
+      "std": 2.080139225514192,
+      "min": 19.0,
+      "max": 34.0,
+      "skewness": -0.5192852544932476,
+      "kurtosis": 0.675684024903974,
+      "q1": 29.0,
+      "q2_median": 30.0,
+      "q3": 31.0,
+      "iqr": 2.0,
+      "outliers_iqr": 518,
+      "outliers_zscore": 118,
+      "percentiles": {
+        "p1": 24.0,
+        "p5": 27.0,
+        "p10": 28.0,
+        "p25": 29.0,
+        "p50": 30.0,
+        "p75": 31.0,
+        "p90": 33.0,
+        "p95": 33.0,
+        "p99": 33.0
+      }
+    },
+    "PhoneBootloader": {
+      "dtype": "object",
+      "n_missing": 2765,
+      "pct_missing": 11.935595268928601,
+      "n_unique": 1111,
+      "most_frequent_value": "unknown",
+      "most_frequent_count": 14580,
+      "most_frequent_pct": 62.93706293706294,
+      "top_5_values": {
+        "unknown": 14580,
+        "nan": 2765,
+        "A515FXXU7HWF1": 190,
+        "A125FXXS3CWF1": 188,
+        "A505FNPUU9CWB4": 154
+      },
+      "value_counts_sample": {
+        "unknown": 14580,
+        "nan": 2765,
+        "A515FXXU7HWF1": 190
+      }
+    },
+    "PhoneBoard": {
+      "dtype": "object",
+      "n_missing": 2765,
+      "pct_missing": 11.935595268928601,
+      "n_unique": 765,
+      "most_frequent_value": "NaN",
+      "most_frequent_count": 2765,
+      "most_frequent_pct": 11.935595268928601,
+      "top_5_values": {
+        "nan": 2765,
+        "bengal": 579,
+        "QC_Reference_Phone": 571,
+        "dandelion": 540,
+        "exynos9611": 513
+      },
+      "value_counts_sample": {
+        "nan": 2765,
+        "bengal": 579,
+        "QC_Reference_Phone": 571
+      }
+    },
+    "PhoneProduct": {
+      "dtype": "object",
+      "n_missing": 2765,
+      "pct_missing": 11.935595268928601,
+      "n_unique": 1581,
+      "most_frequent_value": "NaN",
+      "most_frequent_count": 2765,
+      "most_frequent_pct": 11.935595268928601,
+      "top_5_values": {
+        "nan": 2765,
+        "angelican_ru": 496,
+        "dandelion_ru": 494,
+        "a51nsser": 328,
+        "galahad_ru": 315
+      },
+      "value_counts_sample": {
+        "nan": 2765,
+        "angelican_ru": 496,
+        "dandelion_ru": 494
+      }
+    },
+    "AndroidRelease": {
+      "dtype": "object",
+      "n_missing": 2770,
+      "pct_missing": 11.95717862384529,
+      "n_unique": 21,
+      "most_frequent_value": "13",
+      "most_frequent_count": 4964,
+      "most_frequent_pct": 21.427954761288095,
+      "top_5_values": {
+        "13": 4964,
+        "11": 4470,
+        "10": 4230,
+        "12": 3541,
+        "nan": 2770
+      },
+      "value_counts_sample": {
+        "13": 4964,
+        "11": 4470,
+        "10": 4230
+      }
+    },
+    "PhoneFinterprint": {
+      "dtype": "object",
+      "n_missing": 2765,
+      "pct_missing": 11.935595268928601,
+      "n_unique": 4001,
+      "most_frequent_value": "NaN",
+      "most_frequent_count": 2765,
+      "most_frequent_pct": 11.935595268928601,
+      "top_5_values": {
+        "nan": 2765,
+        "Redmi/angelican_ru/angelican:10/QP1A.190711.020/V12.0.14.0.QCSRUXM:user/release-keys": 358,
+        "Redmi/dandelion_ru/dandelion:10/QP1A.190711.020/V12.0.17.0.QCDRUXM:user/release-keys": 316,
+        "HONOR/JAT-L21RU/HWJAT-M:9/HONORJAT-LX1/9.1.0.351C10:user/release-keys": 225,
+        "samsung/a51nsser/a51:13/TP1A.220624.014/A515FXXU7HWF1:user/release-keys": 189
+      },
+      "value_counts_sample": {
+        "nan": 2765,
+        "Redmi/angelican_ru/angelican:10/QP1A.190711.020/V12.0.14.0.QCSRUXM:user/release-keys": 358,
+        "Redmi/dandelion_ru/dandelion:10/QP1A.190711.020/V12.0.17.0.QCDRUXM:user/release-keys": 316
+      }
+    },
+    "PhoneManufacturerModel": {
+      "dtype": "object",
+      "n_missing": 2765,
+      "pct_missing": 11.935595268928601,
+      "n_unique": 1308,
+      "most_frequent_value": "NaN",
+      "most_frequent_count": 2765,
+      "most_frequent_pct": 11.935595268928601,
+      "top_5_values": {
+        "nan": 2765,
+        "Xiaomi M2006C3LG": 511,
+        "Xiaomi M2006C3MNG": 500,
+        "Xiaomi M2004J19C": 340,
+        "samsung SM-A515F": 330
+      },
+      "value_counts_sample": {
+        "nan": 2765,
+        "Xiaomi M2006C3LG": 511,
+        "Xiaomi M2006C3MNG": 500
+      }
+    },
+    "PhoneID": {
+      "dtype": "object",
+      "n_missing": 2765,
+      "pct_missing": 11.935595268928601,
+      "n_unique": 381,
+      "most_frequent_value": "TP1A.220624.014",
+      "most_frequent_count": 3279,
+      "most_frequent_pct": 14.154364154364155,
+      "top_5_values": {
+        "TP1A.220624.014": 3279,
+        "nan": 2765,
+        "SP1A.210812.016": 2714,
+        "QP1A.190711.020": 1951,
+        "RP1A.200720.011": 1507
+      },
+      "value_counts_sample": {
+        "TP1A.220624.014": 3279,
+        "nan": 2765,
+        "SP1A.210812.016": 2714
+      }
+    },
+    "PhoneRadio": {
+      "dtype": "object",
+      "n_missing": 2992,
+      "pct_missing": 12.91547958214625,
+      "n_unique": 2373,
+      "most_frequent_value": "NaN",
+      "most_frequent_count": 2992,
+      "most_frequent_pct": 12.91547958214625,
+      "top_5_values": {
+        "nan": 2992,
+        "M_V3_P10,M_V3_P10": 853,
+        "O_V1_P16,O_V1_P16": 575,
+        "21C20B388S000C000,21C20B388S000C000": 560,
+        "21C20B388S001C000,21C20B388S001C000": 399
+      },
+      "value_counts_sample": {
+        "nan": 2992,
+        "M_V3_P10,M_V3_P10": 853,
+        "O_V1_P16,O_V1_P16": 575
+      }
+    },
+    "PhoneBrand": {
+      "dtype": "object",
+      "n_missing": 2765,
+      "pct_missing": 11.935595268928601,
+      "n_unique": 100,
+      "most_frequent_value": "samsung",
+      "most_frequent_count": 5838,
+      "most_frequent_pct": 25.2007252007252,
+      "top_5_values": {
+        "samsung": 5838,
+        "Redmi": 3926,
+        "nan": 2765,
+        "HONOR": 2632,
+        "realme": 1588
+      },
+      "value_counts_sample": {
+        "samsung": 5838,
+        "Redmi": 3926,
+        "nan": 2765
+      }
+    },
+    "DebuggerConnected": {
+      "dtype": "object",
+      "n_missing": 2779,
+      "pct_missing": 11.996028662695329,
+      "n_unique": 2,
+      "most_frequent_value": "[False]",
+      "most_frequent_count": 20385,
+      "most_frequent_pct": 87.99533799533799,
+      "top_5_values": {
+        "[False]": 20385,
+        "nan": 2779,
+        "[False, True]": 2
+      },
+      "value_counts_sample": {
+        "[False]": 20385,
+        "nan": 2779,
+        "[False, True]": 2
+      }
+    },
+    "DeveloperModeEnabled": {
+      "dtype": "object",
+      "n_missing": 2779,
+      "pct_missing": 11.996028662695329,
+      "n_unique": 2,
+      "most_frequent_value": "False",
+      "most_frequent_count": 17336,
+      "most_frequent_pct": 74.8338081671415,
+      "top_5_values": {
+        "False": 17336,
+        "True": 3051,
+        "nan": 2779
+      },
+      "value_counts_sample": {
+        "False": 17336,
+        "True": 3051,
+        "nan": 2779
+      }
+    },
+    "PhoneDevice": {
+      "dtype": "object",
+      "n_missing": 2765,
+      "pct_missing": 11.935595268928601,
+      "n_unique": 1196,
+      "most_frequent_value": "NaN",
+      "most_frequent_count": 2765,
+      "most_frequent_pct": 11.935595268928601,
+      "top_5_values": {
+        "nan": 2765,
+        "dandelion": 540,
+        "angelican": 500,
+        "a51": 330,
+        "galahad": 327
+      },
+      "value_counts_sample": {
+        "nan": 2765,
+        "dandelion": 540,
+        "angelican": 500
+      }
+    },
+    "PhoneHardware": {
+      "dtype": "object",
+      "n_missing": 2765,
+      "pct_missing": 11.935595268928601,
+      "n_unique": 191,
+      "most_frequent_value": "qcom",
+      "most_frequent_count": 5642,
+      "most_frequent_pct": 24.354657687991022,
+      "top_5_values": {
+        "qcom": 5642,
+        "nan": 2765,
+        "mt6765": 1937,
+        "mt6768": 1390,
+        "kirin710": 1260
+      },
+      "value_counts_sample": {
+        "qcom": 5642,
+        "nan": 2765,
+        "mt6765": 1937
+      }
+    },
+    "Serial": {
+      "dtype": "object",
+      "n_missing": 2765,
+      "pct_missing": 11.935595268928601,
+      "n_unique": 1481,
+      "most_frequent_value": "UNi0qUHCa4lILJSrMktaJ0+c7WY=",
+      "most_frequent_count": 18885,
+      "most_frequent_pct": 81.52033152033152,
+      "top_5_values": {
+        "UNi0qUHCa4lILJSrMktaJ0+c7WY=": 18885,
+        "nan": 2765,
+        "9x1LF+v6AgSmljwlCql+H3clGi8=": 19,
+        "zifLFBCY/rAHFOdYZGvj6ZwYW3E=": 10,
+        "URSt5eypmGDnhlURTVO9ycBCPns=": 8
+      },
+      "value_counts_sample": {
+        "UNi0qUHCa4lILJSrMktaJ0+c7WY=": 18885,
+        "nan": 2765,
+        "9x1LF+v6AgSmljwlCql+H3clGi8=": 19
+      }
+    },
+    "PhoneDisplay": {
+      "dtype": "object",
+      "n_missing": 2765,
+      "pct_missing": 11.935595268928601,
+      "n_unique": 3113,
+      "most_frequent_value": "NaN",
+      "most_frequent_count": 2765,
+      "most_frequent_pct": 11.935595268928601,
+      "top_5_values": {
+        "nan": 2765,
+        "RP1A.200720.011": 852,
+        "QP1A.190711.020": 831,
+        "TP1A.220624.014": 716,
+        "TKQ1.221114.001 test-keys": 457
+      },
+      "value_counts_sample": {
+        "nan": 2765,
+        "RP1A.200720.011": 852,
+        "QP1A.190711.020": 831
+      }
+    },
+    "IsDeviceSecured": {
+      "dtype": "object",
+      "n_missing": 2779,
+      "pct_missing": 11.996028662695329,
+      "n_unique": 2,
+      "most_frequent_value": "True",
+      "most_frequent_count": 12735,
+      "most_frequent_pct": 54.97280497280498,
+      "top_5_values": {
+        "True": 12735,
+        "False": 7652,
+        "nan": 2779
+      },
+      "value_counts_sample": {
+        "True": 12735,
+        "False": 7652,
+        "nan": 2779
+      }
+    },
+    "DefaultSMSApp": {
+      "dtype": "object",
+      "n_missing": 2937,
+      "pct_missing": 12.678062678062679,
+      "n_unique": 31,
+      "most_frequent_value": "com.google.android.apps.messaging",
+      "most_frequent_count": 11396,
+      "most_frequent_pct": 49.192782526115856,
+      "top_5_values": {
+        "com.google.android.apps.messaging": 11396,
+        "com.samsung.android.messaging": 4568,
+        "com.android.mms": 3552,
+        "nan": 2937,
+        "com.transsion.smartmessage": 499
+      },
+      "value_counts_sample": {
+        "com.google.android.apps.messaging": 11396,
+        "com.samsung.android.messaging": 4568,
+        "com.android.mms": 3552
+      }
+    },
+    "target": {
+      "dtype": "object",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 2,
+      "most_frequent_value": "G",
+      "most_frequent_count": 19247,
+      "most_frequent_pct": 83.08296641629975,
+      "top_5_values": {
+        "G": 19247,
+        "F": 3919
+      },
+      "value_counts_sample": {
+        "G": 19247,
+        "F": 3919
+      }
+    },
+    "agent_id": {
+      "dtype": "object",
+      "n_missing": 0,
+      "pct_missing": 0.0,
+      "n_unique": 23166,
+      "most_frequent_value": "82eebdb2-4f40-471f-bef0-afdd90aaf5c0",
+      "most_frequent_count": 1,
+      "most_frequent_pct": 0.00431667098333765,
+      "top_5_values": {
+        "82eebdb2-4f40-471f-bef0-afdd90aaf5c0": 1,
+        "ba83cf2b-82e4-4103-974b-9e4ba8aedb77": 1,
+        "12783ee2-202f-4a92-8250-cfee7afd76ff": 1,
+        "e47e3f29-493f-44cc-b7bc-abfb4245362e": 1,
+        "7cf97ed6-7e72-4f3a-a97f-8d904b6f6014": 1
+      },
+      "value_counts_sample": {
+        "82eebdb2-4f40-471f-bef0-afdd90aaf5c0": 1,
+        "ba83cf2b-82e4-4103-974b-9e4ba8aedb77": 1,
+        "12783ee2-202f-4a92-8250-cfee7afd76ff": 1
+      }
+    }
+  },
+  "correlation": {
+    "highly_correlated_pairs": [],
+    "correlation_matrix_sample": {}
+  }
+}
