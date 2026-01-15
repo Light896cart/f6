@@ -147,3 +147,9 @@
 ```bash
 pip install -r requirements.txt
 ```
+
+## Варианты запуска
+1. Если у вас уже есть train_dataset_6.csv и test_dataset_6.csv:
+```
+python main.py --mode preprocessed
+```
