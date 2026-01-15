@@ -1,4 +1,9 @@
-# src/model_lgb.py
+"""
+Назначение:
+Обучение LightGBM с early stopping и валидацией.
+Статус: Актуальный — используется в model/stacking.py и model/oof_stacking.py.
+"""
+
 import lightgbm as lgb
 
 def get_lgb_model(X_train, X_val, y_train, y_val, **kwargs):

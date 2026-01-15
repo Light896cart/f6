@@ -1,4 +1,10 @@
-# src/thresholding.py
+"""
+Назначение:
+Поиск оптимального порога бинаризации по F2, MCC, G-mean.
+Статус: Полезный, но не используется в текущих main.py или metrics.py (там фиксированный порог).
+
+Может быть подключён позже для тонкой настройки.
+"""
 import numpy as np
 from sklearn.metrics import fbeta_score, matthews_corrcoef, precision_recall_curve
 

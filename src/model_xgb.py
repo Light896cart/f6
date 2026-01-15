@@ -1,4 +1,9 @@
-# src/model_xgb.py
+"""
+Назначение:
+Обучение XGBoost с балансировкой классов (scale_pos_weight).
+Статус: Актуальный — используется в стекингах.
+"""
+
 import xgboost as xgb
 
 def get_xgb_model(X_train, X_val, y_train, y_val, **kwargs):

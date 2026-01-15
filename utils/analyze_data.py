@@ -1,4 +1,8 @@
-# analyze_data.py
+"""
+Назначение:
+Генерация профиля данных (пропуски, распределения, корреляции) → сохраняет в JSON.
+Статус: Вспомогательный — полезен на этапе EDA, но не входит в inference pipeline.
+"""
 import pandas as pd
 import numpy as np
 import json

@@ -1,9 +1,13 @@
-# src/features.py
-import pandas as pd
-import numpy as np
+"""
+Назначение:
+Основной модуль препроцессинга признаков: обработка build-информации, флагов, пакетов, создание комбинированных признаков (например, emulator_pattern, risky_combo_1).
+Статус: Актуальный - может использоваться.
+"""
+
 import re
-import json
-from typing import Dict, Any, Optional
+from typing import Any, Optional
+
+import pandas as pd
 
 # === Константы ===
 SUSPICIOUS_HOST_PATTERNS = ["mi-server", "ota-bd", "pangu", "buildsrv", "cn-", "dg02", "pool", "kvm"]

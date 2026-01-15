@@ -1,4 +1,11 @@
-# src/build_final_dataset.py
+"""
+Назначение:
+Создаёт финальный датасет из android_device_info.csv + android_packages.csv.gz:
+
+Извлекает признаки из JSON-пакетов.
+Добавляет энтропию серийника, долю легитимных сертификатов и т.д.
+Статус: Актуальный — содержит сложную логику, которая дублируется частично в features.py, но расширяет её (например, frac_legit_certs, serial_entropy).
+"""
 import pandas as pd
 import numpy as np
 import re

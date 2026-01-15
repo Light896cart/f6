@@ -1,3 +1,10 @@
+"""
+Назначение:
+Делит android_device_info.csv на train/test (80/20).
+Статус: Утилита.
+"""
+
+
 import pandas as pd
 
 # Загрузка данных

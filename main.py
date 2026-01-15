@@ -1,4 +1,13 @@
-# main.py
+"""
+Назначение:
+Главный скрипт запуска:
+
+Загружает данные.
+Вызывает train_stacking_with_holdout.
+Оценивает на hold-out и на внешнем тесте.
+Статус: Основной entry point.
+
+"""
 import numpy as np
 import pandas as pd
 from pathlib import Path

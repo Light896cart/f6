@@ -1,4 +1,12 @@
-# main_stacking.py
+"""
+Назначение:
+Упрощённый стекинг без hold-out, с обычным train/test split.
+Проблема:
+
+Использует get_lgb_model() без аргументов → вызовет ошибку (функция требует X_train, X_val...).
+Не согласуется с остальной архитектурой (нет early stopping через val set).
+Статус: Устарел"""
+
 import pandas as pd
 import numpy as np
 from pathlib import Path

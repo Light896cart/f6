@@ -1,4 +1,8 @@
-# src/metrics.py
+"""
+Назначение:
+Полноценная оценка модели: от ROC-AUC до бизнес-метрик (стоимость FP/FN, экономия vs baseline).
+Статус: Актуальный — используется в main.py.
+"""
 import numpy as np
 from sklearn.metrics import (
     classification_report, roc_auc_score, average_precision_score,

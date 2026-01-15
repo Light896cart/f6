@@ -1,4 +1,12 @@
-# model/oof_stacking.py
+"""
+Назначение:
+Альтернативная реализация стекинга через OOF без hold-out.
+Проблема:
+
+Не вызывается ни из main.py, ни из других скриптов.
+Использует собственную вспомогательную функцию train_test_split_for_early_stopping.
+Статус: Старая версия
+"""
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold

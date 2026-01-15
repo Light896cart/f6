@@ -1,4 +1,14 @@
-# model/stacking.py
+"""
+Назначение:
+Реализация честного стекинга с hold-out:
+
+Отделяет настоящий тест.
+Генерирует OOF-предсказания через KFold.
+Обучает мета-модель (LogisticRegression).
+Возвращает всё для инференса.
+Статус: Ключевой — вызывается напрямую в main.py.
+"""
+
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold, train_test_split

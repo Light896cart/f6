@@ -1,0 +1,22 @@
+# Data files
+*.csv
+*.gz
+*.json
+
+# Model binaries / outputs
+version_model/
+
+# Temporary / log files
+describe.txt
+tes
+
+# Task description (not code)
+task.pdf
+
+# IDE / OS files (на всякий случай)
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
+.idea/
+f6/

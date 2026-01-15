@@ -1,4 +1,11 @@
-# src/models.py
+"""Назначение:
+Дублирует model_lgb.py и model_xgb.py — те же функции get_lgb_model, get_xgb_model.
+Проблема:
+
+Использует max_depth=6 (в отличие от max_depth=3 в других файлах).
+Нигде не импортируется в других скриптах.
+Статус: Устарел"""
+
 import lightgbm as lgb
 import xgboost as xgb
 from sklearn.model_selection import train_test_split
